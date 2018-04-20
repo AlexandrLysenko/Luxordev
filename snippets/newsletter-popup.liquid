@@ -1,43 +1,24 @@
-{% if settings.newsletter_popup %}
-  <a id="newsletter" href="#target"></a>
-  <span style="display: none;">
-   <span id="target">
-    {% if settings.newsletter_popup_link != blank %}
-      <a href="{{ settings.newsletter_popup_link }}">
-    {% endif %}
-
-    {% if settings.newsletter_popup_title != blank %}
-      <p class="headline">
-        {{ settings.newsletter_popup_title | escape }}
-      </p>
-    {% endif %}
-
-    {% if settings.newsletter_popup_image %}
-      <p>
-        {{ settings.newsletter_popup_image | img_url: '580x', scale: 2 | img_tag: settings.newsletter_popup_image.alt, 'lazyload transition-in' }}
-      </p>
-    {% endif %}
-
-    {% if settings.newsletter_popup_text != blank %}
-      {{ settings.newsletter_popup_text }}
-    {% endif %}
-
-    {% if settings.newsletter_popup_link != blank %}
-      </a>
-    {% endif %}
-
+{% if settings.newsletter_popup %}   
+	<a id="newsletter" href="#target"></a>
+	<span style="display: none;">
+	 <span id="target">
     {% if settings.newsletter_popup_form %}
       {% include 'newsletter' %}
     {% endif %}
-    </span>
-  </span>
+	  </span>
+	</span>
 
   <script type="text/javascript">
     function openNewsletterPopup() {
+      {% if settings.newsletter_popup_page != blank %}
+        $.get("/pages/{{ settings.newsletter_popup_page }}.json", function(data) {
+        $("#target").prepend("<h1>" + data["page"]["title"] + "</h1>" + data["page"]["body_html"]);
+        });
+      {% endif %}    
       setTimeout( function() {
-        $('#newsletter').fancybox({wrapCSS: 'newsletter_popup', padding: [40, 40, 40, 40], scrolling: false, maxWidth: {% if settings.newsletter_popup_max_width != blank %}{{ settings.newsletter_popup_max_width }}{% else %}600{% endif %}, minWidth: 250});
-        $('#newsletter').trigger('click');
-      },
+        $('#newsletter').fancybox({wrapCSS: 'newsletter_popup', scrolling: false, maxWidth: {% if settings.newsletter_popup_max_width != blank %}{{ settings.newsletter_popup_max_width }}{% else %}600{% endif %}});
+        $('#newsletter').trigger('click'); 
+      }, 
       {% if settings.newsletter_popup_seconds != blank %}{{ settings.newsletter_popup_seconds }}{% else %}2{% endif %}*1000);
     }
 
@@ -47,7 +28,7 @@
 
       if (cookie_enabled && popup == 'open') {
           return false;
-      } else if ({{ settings.newsletter_popup_mobile }} || $(window).width() > 768 || $(window).width() == 0) {
+      } else {
         openNewsletterPopup();
       }
       if (cookie_enabled) {
@@ -56,3 +37,4 @@
     });
   </script>
 {% endif %}
+

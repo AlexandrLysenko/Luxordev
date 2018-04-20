@@ -7,16 +7,16 @@
       {% assign option_index = forloop.index0 %}
       {% assign values = '' %}
       <div class="collection_swatches">
-
+        
         {% for variant in product.variants %}
           {% assign value = variant.options[option_index] %}
           {% unless values contains value %}
             {% assign values = values | join: ',' %}
-            {% assign values = values | append: ',' | append: value %}
+            {% assign values = values | append: ',' | append: value %} 
             {% assign values = values | split: ',' %}
 
-            <a href="{{ variant.url | within: collection }}" class="swatch">
-              <span data-image="{{ variant.featured_image | product_img_url: '1024x1024' }}" style="background-image: url({{ value | handle | append: '.' | append: file_extension | asset_img_url: '50x' | prepend: 'https:' }}); background-color: {{ value | split: ' ' | last | handle }};"></span>
+            <a href="javascript:void(0)" class="swatch">
+              <span data-image="{{ variant.featured_image | product_img_url: '1024x1024' }}" style="background-color: {{ value | split: ' ' | last | handle }}; background-image: url({{ value | handle | append: '.' | append: file_extension | asset_url }}); background-position: 5px 20px;"></span>
             </a>
           {% endunless %}
         {% endfor %}

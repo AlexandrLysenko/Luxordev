@@ -21,7 +21,7 @@
       "signup_form_success": "提交成功! 我们即将在开幕前寄邮件给您",
       "admin_link_html": "你是店主吗?",
       "password_link": "输入密码",
-      "powered_by_shopify_html": "此网页使用<a href=\"https:\/\/www.shopify.com\/?ref=out-of-the-sandbox\" target=\"_blank\">Shopify<\/a>系统"
+      "powered_by_shopify_html": "此网页使用<a href=\"https:\/\/www.shopify.com\/\" target=\"_blank\">Shopify<\/a>系统"
     },
     "forms": {
       "post_error": "表单填写有误请重新填写",
@@ -310,22 +310,9 @@
       "print": "打印"
     }
   },
-  "homepage": {
-    "onboarding": {
-      "product_title": "Your product's name",
-      "product_description": "This area is used to describe your product’s details. Tell customers about the look, feel, and style of your product. Add details on color, materials used, sizing, and where it was made.",
-      "caption_headline": "Your headline",
-      "caption_subtitle": "Subtitle",
-      "caption_button": "Linked button",
-      "promotion_name": "Your promotion headline",
-      "promotion_description": "Promotion description appears here.",
-      "collection_title": "Your collection's name",
-      "blog_title": "News",
-      "blogpost_title": "Your post's title",
-      "blog_excerpt": "Your store hasn’t published any blog posts yet. A blog can be used to talk about new product launches, tips, or other news you want to share with your customers. You can check out Shopify’s ecommerce blog for inspiration and advice for your own store and blog.",
-      "blog_author": "Author name",
-      "no_content": "This section doesn’t currently include any content."
-    }
+  "home_page": {
+    "recent_articles": "最新文章",
+    "tweets": "推特消息"
   },
   "cart": {
     "general": {
@@ -342,6 +329,7 @@
       "excluding_tax_shipping": "不包含税金和邮资",
       "orders_processed_in_currency_html": "订单将以{{ currency }}计算。",
       "note": "订单备注",
+      "agree_to_terms_html": "我同意所有交易条款",
       "agree_to_terms_warning": "您必须同意交易条款后才能结账。",
       "or": "或",
       "subtotal": "小计",
@@ -383,7 +371,6 @@
       "twitter_title": "分享至推特",
       "facebook_title": "分享至脸书",
       "pinterest_title": "分享至Pinterest",
-      "google_plus_title": "Google+",
       "pinterest_share": "{{ name }}的{{ title }}  ",
       "email_title": "电邮分享给好友",
       "email_subject": "我觉得你可能会喜欢{{ title }}",

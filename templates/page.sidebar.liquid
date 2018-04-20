@@ -1,5 +1,10 @@
-{% comment %}
-  The contents of the page.sidebar.liquid template can be found in /sections/page-sidebar-template.liquid
-{% endcomment %}
+<div class="sixteen columns">
+  <h1 class="center">{{ page.title }}</h1>
+  <div class="feature_divider"></div>
+</div>
 
-{% section 'page-sidebar-template' %}
+{% include 'sidebar' %}
+<div class="twelve columns page">
+  {{ page.content }}
+    {% include 'gift-wrapping' %}
+</div>

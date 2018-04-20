@@ -10,7 +10,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon | img_url: '32x32' }}">
+  <link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.png' | asset_url }}">
 
   <!-- Custom Fonts -->
   {% if settings.logo_font contains 'Google' or settings.headline_font contains 'Google' or settings.nav_font contains 'Google' or settings.slideshow_subtitle_font contains 'Google' or settings.regular_font contains 'Google' %}
@@ -35,7 +35,13 @@
   <div class="wrapper">
     <header class="giftcard-header" role="banner">
       <div class="h1 header-logo logo" itemscope itemtype="http://schema.org/Organization">
-        <a href="{{ shop.url }}" itemprop="url">{{ shop.name }}</a>
+        {% if settings.use_logo %}
+          <a href="{{ shop.url }}" itemprop="url">
+            <img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" itemprop="logo">
+          </a>
+        {% else %}
+          <a href="{{ shop.url }}" itemprop="url">{{ shop.name }}</a>
+        {% endif %}
       </div>
       <div class="shop-url">{{ shop.url }}</div>
     </header>
