@@ -1,0 +1,77 @@
+{% comment %}
+<section class="review-section pro_sec_rev">
+  <h3 class="title center">{{ settings.cust_revie_heding_1 }}</h3>
+  <div class="feature_divider"></div>
+  <div class="review-outter">
+    <div  id="review-slider" class="bxslider">
+      
+      {% for i in (1..6) %}
+      
+      	 {% capture cust_review_sub_txt %}cust_review_sub_txt_{{ i }}{% endcapture %}
+      	 {% capture cust_auther_name %}cust_auther_name_{{ i }}{% endcapture %}
+      	 {% capture cust_auther_sub_name %}cust_auther_sub_name_{{ i }}{% endcapture %}
+         {% capture cust_revie_chk %}cust_revie_chk_{{ i }}{% endcapture %}
+         
+      
+      	{% if settings[cust_revie_chk] %}
+      
+        <div class="review-wrp">
+          
+          <div class="review-inner">
+            <p>
+             {{ settings[cust_review_sub_txt] }}
+            </p>
+            <span class="bottom-arrow"><i class="sprite sprite-testi_arrow"></i></span>
+          </div>
+          <p>
+           
+          <span class="rating"> 
+            <i class="sprite sprite-5-stars-rating_120x31"></i>
+            </span>
+            <span>{{ settings[cust_auther_name] }}</span>
+            <i>{{ settings[cust_auther_sub_name] }}</i>
+          </p>
+        </div>
+      	{% endif %}
+      
+      {% endfor %}
+    
+    </div>
+  </div>
+</section>
+
+{% endcomment %}
+
+<section class="tips-section pro_sec_tip">
+   <div class="tips-outter">
+  	<ul>
+    <li>
+    <div class="tips-inner">
+        <span>
+          <img src="{{ 'vhicle-icon.png' | asset_url  }}" alt="">
+        </span>
+      </div> 
+      <p>Free Shipping</p> 
+    </li>
+    <li>
+     <div class="tips-inner">
+        <span>
+	     <img src="{{ 'gift-iconnew.png' | asset_url }}" alt="" class="middle-img">
+        </span>
+      </div>
+       <p> Monogramming<br> & Gift Wrapping services</p> 
+    </li>
+    <li>
+    <div class="tips-inner">
+        <span>
+	       <img src="{{ 'cal-new.png' | asset_url }}" alt=""> 
+        </span>
+      </div>       
+     <p>30 Day In-Home Trial</p>
+    </li>
+  </ul> 
+  </div>
+</section>
+
+
+

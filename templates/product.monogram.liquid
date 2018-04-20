@@ -1,0 +1,569 @@
+{% comment %}{% include 'bold-product' with product, hide_action: 'break' %}{% if bold_hidden_product %}{% break %}{%endif %}{% endcomment %}
+{% include 'bold-product' with product, hide_action: 'break', output: 'none' %}
+{{ 'style.css' | asset_url | stylesheet_tag  }}
+{% comment %}
+{% endcomment %}
+{{ 'magnific-popup.css' | asset_url | stylesheet_tag  }}
+{{ 'fonts.css' | asset_url | stylesheet_tag  }} 
+
+
+<div class="sixteen columns product_page">
+  <div class="clearfix breadcrumb">
+    <div class="nav_arrows">
+      {% if collection.previous_product %}
+        <a href="{{ collection.previous_product }}" title="{{ 'products.general.previous_product_html' | t }}" class="ss-icon prev">&#x25C5;</a>
+      {% endif %}
+
+      {% if collection.next_product %}
+        <a href="{{collection.next_product}}" title="{{ 'products.general.next_product_html' | t }}" class="ss-icon next">&#x25BB;</a>
+      {% endif %}
+    </div>
+
+    {% if settings.product_breadcrumb %}
+      <div class="breadcrumb_text" itemscope itemtype="http://schema.org/BreadcrumbList">
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a href="{{ shop.url }}" title="{{ shop.name | escape }}" itemprop="item"><span itemprop="name">{{ 'general.breadcrumbs.home' | t }}</span></a></span> 
+        &nbsp;<span class="icon-right-arrow"></span>
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          {% if collection %}
+            <a href="{{ collection.url }}" title="{{ collection.title | escape }}" itemprop="item"><span itemprop="name">{{ collection.title }}</span></a>
+          {% else %}
+            <a href="/collections/all" title="{{ collections.all.title }}">{{ collections.all.title }}</a>     
+          {% endif %}
+        </span>
+        &nbsp;<span class="icon-right-arrow"></span>
+        {{ product.title }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if settings.product_sidebar %}
+  {% include 'sidebar' %}
+<div class="twelve columns">
+  <div class="product-{{ product.id }}">
+    {% else %}
+    <div class="sixteen columns">
+      <div class="product-{{ product.id }}">
+        {% endif %}
+
+        <div class="section product_section clearfix" itemscope itemtype="http://schema.org/Product">
+          {% include 'shappify-sales-clock' %} 
+          <div class="{% if settings.product_sidebar %}eight{% else %}ten{% endif %} columns {% if product-images == blank %}{% if settings.product_images_position == 'left' %}alpha{% else %}omega{% endif %}{% endif %} {% if settings.product_images_position == 'right' %}mobile_only{% endif %}">
+            {% include 'product-images' %}
+            <div class="clear"> </div>
+
+            <div class="material_promise_pro_section columns nine desktop-only">
+              {% if product.metafields.c_f.material_title != blank and product.metafields.c_f.material_info != blank %}
+              <div class="material_main"> 
+                <div class="material"><img src="{{ 'material.png' | asset_url }}">
+                  <div class="title">{% if product.metafields.c_f.material_title %}
+                    {{ product.metafields.c_f.material_title }}
+                    {% endif %}</div>
+                </div><div class="text">
+                {% if product.metafields.c_f.material_info %}
+                {{ product.metafields.c_f.material_info }}
+                {% endif %}
+                </div>
+              </div>
+              {% endif %}
+              {% if product.metafields.c_f.promise_title != blank and product.metafields.c_f.promise_info != blank %}
+              <div class="thankyou_main">  
+                <div class="thankyou"><img src="{{ 'promise.png' | asset_url }}">
+                  <div class="title">{% if product.metafields.c_f.promise_title %}
+                    {{ product.metafields.c_f.promise_title }}
+                    {% endif %}</div></div>
+                <div class="text">
+                  {% if product.metafields.c_f.promise_info %}
+                  {{ product.metafields.c_f.promise_info }}
+                  {% endif %}
+                </div>
+
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="prod_desc_section {% if settings.product_sidebar %}four{% else %}six{% endif %} columns {% if settings.product_images_position == 'left' %}omega{% else %}alpha{% endif %}">
+            {% assign collection_handles = product.collections | map: 'handle' %}
+            {% assign variant = product.featured_image %}
+            <h1 class="product_name" itemprop="name" data-value="sasdd">{{ product.title }}</h1>
+            
+            
+            {% if settings.display_sku %}
+             {% if variant.available %}
+            <p class="sku">
+              <strong>SKU:</strong> <span itemprop="sku">{{ variant.sku }}</span>
+            </p>
+            {% else %}
+            {% assign current_variant = product.selected_or_first_available_variant %}
+             <p class="sku">
+              <strong>SKU:</strong> <span itemprop="sku">{{ current_variant.sku }}</span>
+            </p>
+            
+            {% endif %}
+            {% endif %}
+            
+            <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+            {% if settings.display_vendor %}
+            <p class="vendor">
+              <span itemprop="brand">{{ product.vendor | link_to_vendor }}</span>
+            </p>
+            {% endif %}
+
+            {% if settings.size_chart != blank %}
+            <a href="#size-chart" class="lightbox size_chart">{{ 'products.product.size_chart' | t }} <span class="icon-right-arrow"></span></a>
+            {% endif %}
+            {% unless collection_handles contains 'coming-soon' %}
+           
+             {% if variant.available %}
+            
+            
+            <p class="modal_price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+              <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+              <meta itemprop="seller" content="{{ shop.name | escape }}" />
+              <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+              <meta itemprop="itemCondition" content="New" />
+
+              <span class="sold_out">{% if variant.available == false %}{{ 'products.product.sold_out' | t }}{% endif %}</span>
+              <span itemprop="price" content="{{ variant.price | money_without_currency }}" class="{% if variant.compare_at_price > variant.price %}sale{% endif %}">
+                <span class="current_price">
+                  {% if variant.available %}
+                  {% if variant.price > 0 %} 
+                  {{ variant.price | money }} 
+                  {% else %}
+                  {{ settings.free_price_text }}
+                  {% endif %}
+                  {% endif %}
+                </span>
+              </span>
+              <span class="was_price">
+                {% if variant.price < variant.compare_at_price and variant.available %}
+                {{ variant.compare_at_price | money }}
+                {% endif %}
+              </span>
+            </p>
+            
+            
+            
+            {% else %}
+           
+              <p class="modal_price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+              <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+              <meta itemprop="seller" content="{{ shop.name | escape }}" />
+              <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+              <meta itemprop="itemCondition" content="New" />
+
+              <span class="sold_out">{% if product.available == false %}{{ 'products.product.sold_out' | t }}{% endif %}</span>
+              <span itemprop="price" content="{{ product.price | money_without_currency }}" class="{% if product.compare_at_price > product.price %}sale{% endif %}">
+                <span class="current_price">
+                  {% if product.available %}
+                  {% if product.price > 0 %} 
+                  {{ product.price | money }} 
+                  {% else %}
+                  {{ settings.free_price_text }}
+                  {% endif %}
+                  {% endif %}
+                </span>
+              </span>
+              <span class="was_price">
+                {% if product.price < product.compare_at_price and product.available %}
+                {{ product.compare_at_price | money }}
+                {% endif %}
+              </span>
+            </p>
+            
+            
+            
+             {% endif %}
+            {% if product.available == false %}
+
+            {% include 'product-notify-me' %}
+            {% endif %}
+            {% endunless %}
+
+            {% if settings.product_description_position == "top" %}
+            {% if product.description != blank %}
+            {% assign my_description = product.description | split: '<h5>'  %}
+
+            <div class="tab-outter">
+              {% assign my_title = my_description[1] | split: '</h5>' | first %}
+              {% assign my_title1 = my_description[2] | split: '</h5>' | first %}
+              {% assign my_title2 = my_description[3] | split: '</h5>' | first %}
+              {% assign my_title3 = my_description[4] | split: '</h5>' | first %}
+              {% assign my_title_1 = my_description[1] | split: '</h5>' | last %}
+              {% assign my_title1_1 = my_description[2] | split: '</h5>' | last %}
+              {% assign my_title2_1 = my_description[3] | split: '</h5>' | last %}
+              {% assign my_title3_1 = my_description[4] | split: '</h5>' | last %}
+              <ul class="tabs">
+                <li><a href="#tab-1"><strong>{{ my_title }}</strong></a></li>
+                <li><a href="#tab-2"><strong>{{ my_title1 }}</strong></a></li>
+                <li><a href="#tab-3"><strong>{{ my_title2 }}</strong></a></li>
+                <li><a href="#tab-4"><strong>{{ my_title3 }}</strong></a></li>
+              </ul>
+              <div id="tab-1">
+                <div class="description">{{ my_title_1 }}</div>
+              </div>
+              <div id="tab-2"><div class="description">{{my_title1_1}}</div></div>
+              <div id="tab-3">{{ my_title2_1 }}</div>
+              <div id="tab-4">{{ my_title3_1 }}</div>
+            </div>
+            {% endif %}
+            {% endif %}
+            
+            {% unless collection_handles contains 'coming-soon' %}
+            {% include 'product-form-1' with 'product' %}
+            {% endunless %}  
+            
+             <div id="counter_container"></div>
+            
+            {% if settings.product_description_position == "bottom" %}
+            {% if product.description != blank %}
+            {% assign my_description = product.description | split: '<h5>'  %}
+            <div class="tab-outter">
+              {% assign my_title = my_description[1] | split: '</h5>' | first %}
+              {% assign my_title1 = my_description[2] | split: '</h5>' | first %}
+              {% assign my_title2 = my_description[3] | split: '</h5>' | first %}
+              {% assign my_title3 = my_description[4] | split: '</h5>' | first %}
+              {% assign my_title_1 = my_description[1] | split: '</h5>' | last %}
+              {% assign my_title1_1 = my_description[2] | split: '</h5>' | last %}
+              {% assign my_title2_1 = my_description[3] | split: '</h5>' | last %}
+              {% assign my_title3_1 = my_description[4] | split: '</h5>' | last %}
+              <ul class="tabs">
+                <li><a href="#tab-1"><strong>{{ my_title }}</strong></a></li>
+                <li><a href="#tab-2"><strong>{{ my_title1 }}</strong></a></li>
+                <li><a href="#tab-3"><strong>{{ my_title2 }}</strong></a></li>
+                <li><a href="#tab-4"><strong>{{ my_title3 }}</strong></a></li>
+              </ul>
+              <div id="tab-1">
+                <div class="description">
+                  {{ my_title_1 }}
+                </div>
+              </div>
+              <div id="tab-2"><div class="description">{{my_title1_1}}</div></div>
+              <div id="tab-3">{{ my_title2_1 }}</div>
+              <div id="tab-4">{{ my_title3_1 }}</div>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% comment %}
+            <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+            {% endcomment %}  
+            <div class="material_promise_pro_section columns nine mobile-only">
+              {% if product.metafields.c_f.material_title != blank and product.metafields.c_f.material_info != blank %}
+              <div class="material_main"> 
+                <div class="material"><img src="{{ 'material.png' | asset_url }}">
+                  <div class="title">{% if product.metafields.c_f.material_title %}
+                    {{ product.metafields.c_f.material_title }}
+                    {% endif %}</div>
+                </div><div class="text">
+                {% if product.metafields.c_f.material_info %}
+                {{ product.metafields.c_f.material_info }}
+                {% endif %}
+                </div>
+              </div>
+              {% endif %}
+              {% if product.metafields.c_f.promise_title != blank and product.metafields.c_f.promise_info != blank %}
+              <div class="thankyou_main">  
+                <div class="thankyou"><img src="{{ 'promise.png' | asset_url }}">
+                  <div class="title">{% if product.metafields.c_f.promise_title %}
+                    {{ product.metafields.c_f.promise_title }}
+                    {% endif %}</div></div>
+                <div class="text">
+                  {% if product.metafields.c_f.promise_info %}
+                  {{ product.metafields.c_f.promise_info }}
+                  {% endif %}
+                </div>
+
+              </div>
+              {% endif %}
+            </div>
+            
+            <div class="meta" style="display:none;">
+              {% if settings.display_social_buttons %}
+              <div class="share-button"></div>
+              {% endif %}
+
+              {% if settings.display_collections %}
+              <p>
+                <span class="label">{{ 'products.product.collections' | t }}:</span> 
+                <span>
+                  {% for col in product.collections %}
+                  <a href="{{ col.url }}" title="{{ col.title }}">{{ col.title }}</a>{% unless forloop.last %},{% endunless %} 
+                  {% endfor %}
+                </span>
+              </p>
+              {% endif %}
+
+              {% if settings.display_tags %}
+              <p>
+                {% for tag in product.tags %}
+                {% if forloop.first %}
+                <span class="label">{{ 'products.product.tags' | t }}:</span> 
+                {% endif %}
+
+                {% unless tag contains 'meta-related-collection-' %}
+                <span>
+                  <a href="/collections/{% if collection %}{{ collection.handle }}{% else %}all{% endif %}/{{ tag | handle }}" title="{{ 'products.product.products_tagged' | t: tag: tag }}">{{ tag }}</a>{% unless forloop.last %},{% endunless %}
+                </span>
+                {% endunless %} 
+                {% endfor %}
+              </p>
+              {% endif %}
+
+              {% if settings.display_type %}
+              <p>
+                <span class="label">{{ 'products.product.product_types' | t }}:</span> 
+                <span>{{ product.type | link_to_type }}</span>
+              </p>
+              {% endif %}
+            </div>
+          </div>
+         {% if settings.product_images_position == 'right' %}   
+          <div class="{% if settings.product_sidebar %}seven{% else %}nine{% endif %} columns {% if product-images == blank %}{% if settings.product_images_position == 'left' %}alpha{% else %}omega{% endif %}{% endif %} mobile_hidden">          
+            {% include 'product-images' %}
+          </div>
+          {% endif %}
+        </div>
+        {% if product.description contains "<!-- split -->"  %}
+        <br class="clear" />
+        <div class="section clearfix">
+          {% assign my_description = product.description | split: '<h5>'  %}
+          <div class="tab-outter">
+            {% assign my_title = my_description[1] | split: '</h5>' | first %}
+            {% assign my_title1 = my_description[2] | split: '</h5>' | first %}
+            {% assign my_title2 = my_description[3] | split: '</h5>' | first %}
+            {% assign my_title3 = my_description[4] | split: '</h5>' | first %}
+            {% assign my_title_1 = my_description[1] | split: '</h5>' | last %}
+            {% assign my_title1_1 = my_description[2] | split: '</h5>' | last %}
+            {% assign my_title2_1 = my_description[3] | split: '</h5>' | last %}
+            {% assign my_title3_1 = my_description[4] | split: '</h5>' | last %}
+            <ul class="tabs">
+              <li><a href="#tab-1"><strong>{{ my_title }}</strong></a></li>
+              <li><a href="#tab-2"><strong>{{ my_title1 }}</strong></a></li>
+              <li><a href="#tab-3"><strong>{{ my_title2 }}</strong></a></li>
+              <li><a href="#tab-4"><strong>{{ my_title3 }}</strong></a></li>
+            </ul>
+            <div id="tab-1">
+              <div class="description">
+                {{ my_title_1 }}
+              </div>
+            </div>
+            <div id="tab-2"><div class="description">{{my_title1_1}}</div></div>
+            <div id="tab-3">{{ my_title2_1 }}</div>
+            <div id="tab-4">{{ my_title3_1 }}</div>
+          </div>
+       </div>
+        {% endif %}
+       </div>
+      {% if settings.display_related_products %}
+      {% capture limit %}{{ settings.products_per_row | plus: 1 }}{% endcapture %}
+      {% if collection and collection.all_products_count > 1 %}
+      {% assign col = collection.handle %}
+      {% else %}
+      {% assign col = product.collections.last.handle %}
+      {% endif %}
+
+      {% for tag in product.tags %}
+      {% if tag contains 'meta-related-collection-' %}
+      {% assign col = tag | remove: 'meta-related-collection-' %}
+      {% assign collection = collections[col] %}
+      {% capture limit %}{{ collection.products_count | plus: 1 }}{% endcapture %}
+      {% endif %}
+      {% endfor %}
+
+      {% if col and collections[col].all_products_count > 0 %}
+      {% if collections[col].all_products_count != 1 or collections[col].products.first.id != product.id %}
+      <br class="clear" />
+      <h3 class="title related_item_product">{{ 'products.product.related_items' | t }}</h3>
+      <div class="feature_divider related_item_product"></div>
+
+      {% assign skip_product = product %}
+      {% assign products = collections[col].products %}
+      {% assign products_per_row = settings.products_per_row %}
+      {% include 'product-loop' with settings.product_sidebar %}
+      {% endif %}
+      {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+  <div class="pro-tips prod_review_usp">
+    {% include 'tips-and-review-product' %}  
+  </div>
+  <div class="clear"> </div>
+
+<div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+<script>
+  $(document).ready(function() {
+    $('ul.tabs').each(function(){
+      var active, content, links = $(this).find('a');
+      active = links.first().addClass('active');
+      content = $(active.attr('href'));
+      links.not(':first').each(function () {
+        $($(this).attr('href')).hide();
+      });
+      $(this).find('a').click(function(e){
+        active.removeClass('active');
+        content.hide();
+        active = $(this);
+        content = $($(this).attr('href'));
+        active.addClass('active');
+        content.show();
+        return false;
+      });
+    });
+  });
+</script>
+<style>
+
+  #nullsNote{
+    border: 1px solid #dfdfdf;
+  }
+  ul.tabs {
+    border-bottom: 0;
+    display: block;
+    margin: 0 0 0px;
+    padding: 0;
+  }
+  ul.tabs li {
+    display: block;
+    float: left;
+    height: 30px;
+    margin-bottom: 0;
+    padding: 0;
+    width: auto;
+  }
+  ul.tabs li a {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background: none repeat scroll 0 0 #ffffff;
+    /* border-color: #DDDDDD !important;
+    border-style: none;
+    border-width: 1px 1px 0 1px;*/
+    display: block;
+    font-size: 13px;
+    height: 29px;
+    line-height: 30px;
+    margin: 0;
+    padding: 0 20px;
+    text-decoration: none;
+    width: auto;
+    color: #303030;
+    border-bottom:none !important;
+  }
+  ul.tabs li a.active {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-left-width: 1px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    color: #111111;
+    height: 30px;
+    margin: 0 0 0 -1px;
+    padding-top: 4px;
+    position: relative;
+    top: 5px !important;
+    border-color: #d1d1d1;
+  }
+  ul.tabs li:first-child a.active {
+    margin-left: 0;
+  }
+  ul.tabs li:first-child a {
+    border-top-left-radius: 2px;
+    border-width: 1px 1px 0;
+  }
+  ul.tabs li:last-child a {
+    border-top-right-radius: 2px;
+  }
+  ul.tabs:before, ul.tabs:after {
+    content: " ";
+    display: block;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    width: 0;
+  }
+  ul.tabs:after {
+    clear: both;
+  }
+  
+  
+  
+  #tab-1,#tab-2,#tab-3,#tab-4
+  {
+    border: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+    padding: 20px;
+  }
+
+  @media only screen and (min-width:320px) and (max-width:768px)
+  {
+    ul.tabs li a {
+      padding:0 10px;
+    }
+  } 
+
+
+  @media only screen and (min-width:768px) and (max-width:1080px)
+  {
+    ul.tabs
+    {
+      height:30px;
+    }
+    ul.tabs li a{
+      padding:0 15px;
+    }
+  }
+
+  @media only screen and (min-width:1200px) and (max-width:1620px)
+  {
+    ul.tabs li a
+    {
+      padding:0 24px;
+    }
+    ul.tabs li a.active
+    {
+      height:31px;
+    }
+  }
+</style>
+{% if product.available == false %}
+<style>
+
+  .notify_form {
+    display: block !important;
+  }
+</style>
+{% endif %}
+
+<script text="text/javascript">
+  var _learnq = _learnq || [];
+
+  var item = {
+    Name: {{ product.title|json }},
+    ProductID: {{ product.id|json }},
+    Categories: {{ product.collections|map:'title'|json }},
+    ImageURL: "https:{{ product.featured_image.src|img_url:'grande' }}",
+    URL: "{{ shop.secure_url }}{{ product.url }}",
+    Brand: {{ product.vendor|json }},
+    Price: {{ product.price|money|json }},
+    CompareAtPrice: {{ product.compare_at_price_max|money|json }}
+  };
+
+  _learnq.push(['track', 'Viewed Product', item]);
+  _learnq.push(['trackViewedItem', {
+    Title: item.Name,
+    ItemId: item.ProductID,
+    Categories: item.Categories,
+    ImageUrl: item.ImageURL,
+    Url: item.URL,
+    Metadata: {
+      Brand: item.Brand,
+      Price: item.Price,
+      CompareAtPrice: item.CompareAtPrice
+    }
+  }]);
+</script>
+

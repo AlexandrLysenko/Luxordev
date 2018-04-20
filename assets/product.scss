@@ -1,0 +1,111 @@
+     #nullsNote{
+       border: 1px solid #dfdfdf;
+     }
+        
+        
+ul.tabs {
+  border-bottom: 0;
+  display: block;
+  margin: 0 0 0px;
+  padding: 0;
+}
+ul.tabs li {
+  display: block;
+  float: left;
+  height: 30px;
+  margin-bottom: 0;
+  padding: 0;
+  width: auto;
+}
+ul.tabs li a {
+  -moz-border-bottom-colors: none;
+  -moz-border-image: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  background: none repeat scroll 0 0 #ffffff;
+ /* border-color: #DDDDDD !important;
+  border-style: none;
+  border-width: 1px 1px 0 1px;*/
+  display: block;
+  font-size: 13px;
+  height: 29px;
+  line-height: 30px;
+  margin: 0;
+  padding: 0 20px;
+  text-decoration: none;
+  width: auto;
+  color: #303030;
+  border-bottom:none !important;
+}
+ul.tabs li a.active {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border-left-width: 1px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  color: #111111;
+  height: 30px;
+  margin: 0 0 0 -1px;
+  padding-top: 4px;
+  position: relative;
+  top: -4px;
+  border-color: #d1d1d1;
+}
+ul.tabs li:first-child a.active {
+  margin-left: 0;
+}
+ul.tabs li:first-child a {
+  border-top-left-radius: 2px;
+  border-width: 1px 1px 0;
+}
+ul.tabs li:last-child a {
+  border-top-right-radius: 2px;
+}
+ul.tabs:before, ul.tabs:after {
+  content: " ";
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+}
+ul.tabs:after {
+  clear: both;
+}
+#tab-1,#tab-2,#tab-3,#tab-4
+{
+    border: 1px solid #dddddd;
+    padding: 20px;
+}
+
+@media only screen and (min-width:320px) and (max-width:768px)
+{
+  ul.tabs li a {
+    padding:0 10px;
+  }
+} 
+        
+
+@media only screen and (min-width:768px) and (max-width:1080px)
+  {
+  ul.tabs
+  {
+    height:30px;
+  }
+  ul.tabs li a{
+    padding:0 15px;
+  }
+}
+     
+@media only screen and (min-width:1200px) and (max-width:1620px)
+  {
+        ul.tabs li a
+    {
+      padding:0 24px;
+    }
+    ul.tabs li a.active
+    {
+      height:31px;
+    }
+  }
+  

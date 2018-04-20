@@ -1,0 +1,192 @@
+.pro-description {
+    float: left;
+    margin-top: 16px;
+}
+.product_gallery {
+    float: right;
+}
+.pro-thumbs {
+  margin: 0px;
+}
+  .coll-img img {
+    width: 100%;
+}
+  .collection_image .container {
+    position: absolute;
+    right: 8%;
+    top: 20%;
+}
+.collection_image {
+    position: relative;
+}
+.collection-content.right {
+    max-width: 380px;
+    background: rgba(255,255,255,.8);
+    padding: 20px;
+}
+body.collection-left .soldout, body.collection .soldout {
+    position: absolute;
+    top: 32%;
+    left: 36%;
+    display: block;
+}
+.relative.product_image {
+    position: relative;
+}
+.relative.product_image:hover body.collection-left .soldout, .relative.product_image:hover body.collection .soldout {
+display: block !important;  
+}
+.shop-now {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+   
+}
+
+.monogram {
+    position: absolute;
+    right: 20px;
+    bottom: 14px;
+    display: none;
+}
+.relative.product_image:hover .monogram {
+display: block !important;  
+}
+.section.clearfix.collection_description {
+    float: left;
+}
+   ul.keep-touch {
+    list-style: none;
+}
+  ul.keep-touch ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+    ul.keep-touch ul li {
+    display: inline-block;
+    }
+.price-area {
+    float: left;
+}
+.price-share {
+    float: left;
+    width: 100%;
+}
+.price-here {
+    float: left;
+}
+body.product .swatch_options .swatch, .product-monogram .swatch_options .swatch  {
+    margin-bottom: 10px !important;
+}
+body.product .swatch label, .product-monogram .swatch label {
+   font-size: 11px;
+   padding: 0 10px;
+   text-transform: capitalize;
+}
+body.product .option_title, .product-monogram .option_title {
+    text-transform: capitalize;
+}
+.paginate a, .paginate .current, a.tag {
+    border: none !important;
+    margin: 10px 0px !important;
+    padding: 5px 4px !important;
+ 
+}
+body.product .swatch .color label, .product-monogram .swatch .color label {
+ padding: 0 !important;
+}
+.pro-tips {
+    float: left;
+    width: 100%;
+    margin-top: 25px;
+}
+#tab-1 .description ul li {
+   padding-bottom: 0;
+    margin-bottom: 0 !important;
+    line-height: 29px;
+}
+.add_to_cart {
+    padding: 13px !important;
+    margin-top: 4px;
+}
+.add-mon-outter {
+margin-bottom: 0;
+}
+.product-monogram .quantity-outter>label {
+    float: none;
+
+}
+
+.sale-area {
+    float: left;
+}
+.qty {
+    float: left;
+    width: 20%;
+    text-transform: capitalize;
+}
+.sale-btn {
+    float: right;
+}
+.product-monogram .inline_purchase {
+margin: unset;
+}
+.product-monogram table {
+ margin-bottom: 0; 
+}
+.mm-menu.mm-black .mm-list>li.mm-label {
+    background: none;  
+}
+.mm-list>li>a, .mm-list>li>span {
+white-space: normal !important;
+}
+ .mm-current .action_button {
+ margin: 0 !important;
+ }
+.mm-current span.outer_butt_border {
+float: left !important;
+padding: 0 !important;
+margin: 0 9px 10px 0px !important;
+}
+/* .mm-current .mm-list>li>a, .mm-current .mm-list>li>span {
+color: #fff;
+} 
+.mm-current span.outer_butt_border:last-child {
+   
+    border: 3px solid #ffffff;
+}
+*/
+.mm-current span.outer_butt_border:last-child:hover {
+   
+    border: 3px solid #212121;
+}
+.mm-current span.outer_butt_border:last-child a {
+ background:  #ffffff !important;
+}
+.mm-current span.outer_butt_border:last-child a:hover {
+ background: #212121 !important;
+}
+.mm-current .button-area {
+padding: 0 10px 0 20px;
+}
+.share-button.sharer-0 .social.active.bottom {
+    -webkit-transform: scale(.7) translateY(-4px) !important;
+    -ms-transform: scale(.7) translateY(-4px) !important;
+    transform: scale(.7) translateY(-4px) !important;
+   
+}
+.share-button.sharer-0 .social.networks-5.left {
+    margin-left: -125px;
+}
+.social.bottom.left.networks-5.active {
+ margin-left: -115px !important;
+}
+.button--winona::after {
+left:0;
+text-align: center;
+}
+
+.four.columns.logo img {
+    width: 90%;
+}

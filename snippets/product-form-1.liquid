@@ -1,0 +1,1653 @@
+{% if product.available %}
+<form action="/cart/add" method="post" class="shappify_add_to_cart_form clearfix product_form monogram-form" data-product-id="{{ product.id }}" data-money-format="{{ shop.money_format }}" data-shop-currency="{{ shop.currency }}" id="product-form-{{ product.id }}" enctype="multipart/form-data">
+
+  {% if settings.display_inventory_left %}
+  <div class="items_left">
+    {% if product.variants.first.inventory_management == "shopify" and product.variants.first.inventory_quantity > 0 %}
+    {% capture items_left_text %}
+    {% if product.variants.first.inventory_quantity == 1 %}
+    {{ 'products.product.items_left_count.one' | t }}
+    {% else %}
+    {{ 'products.product.items_left_count.other' | t }}
+    {% endif %}
+    {% endcapture %}
+
+    <p><em>{{ product.variants.first.inventory_quantity }} {{ items_left_text }}</em></p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if product.options.size > 1 %}
+  <div class="select">
+    <select id="product-select-{{ product.id }}{{ product-form }}" name="id" class="multi_select">
+      {% for variant in product.variants %}
+      <option {% if variant == product.selected_or_first_available_variant %}selected="selected"{% endif %} value="{{ variant.id }}" data-sku="{{ variant.sku }}">{{ variant.title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% elsif product.options.size == 1 %}
+  {% if product.variants.size > 1 or product.options[0] != "Title" %}
+  <div class="select">
+    <label>{{ product.options[0] }}</label>
+    <select id="product-select-{{ product.id }}{{ product-form }}" name="id">
+      {% for variant in product.variants %}
+      <option {% if variant == product.selected_or_first_available_variant %}selected="selected"{% endif %} value="{{ variant.id }}" data-sku="{{ variant.sku }}">{{ variant.title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% else %}
+  <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+  {% endif %}
+  {% else %}
+  <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+  {% endif %}
+  <span class="mono_hidden_pro">
+	<input type="hidden" id="monogram" value="{{ product.id }}" onClick="show_review()">
+  </span>
+  {% if settings.product_form_style == "swatches" %}
+  {% if product.variants.size > 1 or product.options[0] != "Title" %}
+  <div class="swatch_options">
+    {% for option in product.options %}
+    {% include 'product-swatch' with option %}
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endif %}
+  
+<div id="infiniteoptions-container"></div>
+  
+  {% if settings.display_product_quantity %}
+  <div class="left">
+    <label for="quantity">{{ 'products.product.quantity' | t }}</label>
+    <input type="number" min="1" size="2" class="quantity" name="quantity" id="quantity" value="1" {% if product.variants.first.inventory_management == 'shopify' and product.variants.first.inventory_quantity > 0 and product.variants.first.inventory_policy == "deny" %}max="{{ product.variants.first.inventory_quantity }}"{% endif %} />
+  </div>
+  {% endif %}
+  <div class="purchase clearfix {% if settings.display_product_quantity %}inline_purchase{% endif %}">
+    {% if settings.cart_action == 'reload_page' %}
+    <input type="hidden" name="return_to" value="back" />
+    {% elsif settings.cart_action == 'redirect_checkout' %}
+    <input type="hidden" name="return_to" value="/checkout" />
+    {% endif %}
+
+    {% capture add_to_cart_label %}{% if collection_handles contains 'pre-order' %}{{ 'collections.general.pre_order' | t }}{% else %}{{ 'products.product.add_to_cart' | t }}{% endif %}{% endcapture %}
+    
+   <div class='ba-vol-wrapper'></div>
+    
+    <div class="add-mon-outter clearfix">
+      <div class="option_title">Personalize It</div>
+      <div class="check-outter">
+        <div class="mon-price checkbox-style">
+          <input type="checkbox" id="price-chk" onchange="fnTest(this);"/>
+          {% assign monogram_price = product.metafields.hidden_product_price %}
+          <label for="price-chk"><table class="Mono"><tr><td><img src="https://cdn.shopify.com/s/files/1/1195/2834/files/Monogram-Image.jpg?1079566102406019721" style="width:75px;height:75px;"></td><td>Add Custom Monogramming? <span> ${{ monogram_price.hidden_product_price }}</span></td></tr></table></label>
+        </div>
+        <!--<a style="display:none;" href="javascript:void(0)" class="mono-show" onclick="show_sinup()"> SELECT TO CUSTOMIZE </a>-->
+      </div>
+    
+ 
+
+      <div class="preview-wrp" style="display:none;">
+          <label for="price-chk">Monogram: <span> ${{ monogram_price.hidden_product_price }}</span></label>
+          <div class="preview-block">
+          	<div class="modified-monogram preview-outter">
+              <div class="main-preview-inner"></div>
+            </div>
+          </div>
+        </div>
+      
+    </div>
+    
+    <div>
+      <div class="mono-type">
+      <input type="hidden" id="monogram_text" >
+      </div>
+       
+       <input type="hidden" id="style" >
+       <input type="hidden" id="color" >
+      
+             
+    </div>
+
+    
+    
+    <div class="quantity-wrp clearfix"> 
+      <div class="quantity-outter clearfix">  
+        <label for="quantity">Qty </label>
+        <input min="1" type="number" id="quantity" name="quantity" value="1" />
+       </div>
+	  <button id="ToCart" type="submit" name="add" class="hide action_button add_to_cart" data-label={{ add_to_cart_label | json }}><span class="text">{{ add_to_cart_label }}</span></button>
+      <span class="outer_butt_border cart-button"> <a href="javascript:void(0)" class="action_button right button button--winona button--border-thin button--text-thick button--inverted add_to_cart1" data-text="{{ add_to_cart_label }}"><span class="text">{{ add_to_cart_label }}</span></a></span>
+         <!-- Bold: Options 4-2 -->
+{% include 'shappify-options' %}
+<!-- // end Options 4-2 -->
+     </div> 
+
+  </div>
+ 
+  <div><span class="scolumn"><img src="{{'custom_text_icon.png' | asset_url }}" alt="Icon" /></span><span class="three column"><span class="custom_text_style" style="text-align:center">{{settings.custom_text}}</span></span></div>
+	<div class="saso-volumes"></div>
+<div class="saso-bundle"></div>
+  <div class="powr-countdown-timer" id="02a2ac48_1507064787"> </div>
+  
+</form>
+
+
+
+
+<div class="monogram-popup mfp-hide" id="monogram-popup" onClick="show_review()">
+  <div class="popup-header clearfix">
+    <h5>Customize your monogram</h5>
+    <a href="javascript:void(0)" class="mfp-close" title="Close (Esc)">×</a>
+  </div>
+  <div class="clearfix monogram-content">
+    <div class="monotype-outter monotype-monogram">
+      <div class="heading-outter">
+        <h6>step <span>1</span><p style="float: right; width: 66%;">Choose Font</p></h6>
+      </div>
+      <div class="monotype-style">
+        {% include 'product-monogram-type' %}
+      </div>
+    </div>
+    <div class="monotype-outter monotype-color">
+      <div class="heading-outter">
+        <h6>step <span>2</span><p style="float: right; width: 66%;">choose a color</p></h6>        
+      </div>
+      <div class="monotype-style">
+        {% include 'product-monogram-color' %}
+      </div>
+    </div>
+    <div class="monotype-preview">
+      <div class="heading-outter">
+        <h6>step <span>3</span><p style="float: right; width: 72%; font-size: 14px;"><span></span></p></h6>        
+      </div>
+      <div class="form-outter">
+        <label>
+          <p class="error"></p>
+          <script>
+            /*alert($(this).attr('data-error'));*/       
+            $(document).ready(function(){
+            var firsttext = $('#Conv_SalinasDemo-Regular').attr('data-error');
+            $('#monogram').attr('placeholder',firsttext);
+            });
+          </script>
+          <input type="text" class="form-style" name="monogram" id="monogram">
+        </label>
+        <div class="preview-outter">
+          {% assign instructions = product.metafields.monogram_image %}
+          {% assign arealeft = product.metafields.monogram_arealeft%}
+          {% assign areatop = product.metafields.monogram_areatop%}
+          
+          {% assign areawidth = product.metafields.monogram_areawidth%}
+          {% assign areaheight = product.metafields.monogram_areaheight%}
+          
+          <div class="preview-inner" {%comment%}style="background-image: url('http://shopifyapp.metizcloud.com/luxorlinens/uploads/monogram_upload_image/{{ instructions.monogram_image }}'); background-repeat: no-repeat; background-size: 100% 100%;"{%endcomment%}>
+			
+            
+          </div>
+        </div>
+        <input type="submit" class="btn btn-preview" value="Preview" onClick="show_review()">
+        <input type="submit" class="btn btn-confirm" value="Confirm" onClick="show_confirm()">
+        <p>{{settings.mono_confirmation}}</p>
+      </div>
+    </div>
+  </div>
+  {% assign hidden_product_id = product.metafields.hidden_product_id%}
+  <input type="hidden" id="hidden_product" value="{{hidden_product_id.hidden_product_id}}">
+  <span id="hidden_pro"></span>
+</div>
+
+<script src="{{ 'magnific-popup.min.js' | asset_url }}" defer></script> 
+<script src="{{ 'magnific-popup.js' | asset_url }}" defer></script> 
+
+<script type="text/javascript">
+  // <![CDATA[  
+  $(function() { 
+    $('#price-chk').click(function(){
+      if($(this). prop("checked") == true){
+        show_sinup();
+        $('#hidden_pro').append('<input type="hidden" id="hidden_product" value="{{hidden_product_id.hidden_product_id}}">');
+      }
+    });
+    $('.mfp-close').click(function(){
+      $('html, body').removeClass("monoteer");
+    	$('#price-chk').prop("checked", false);
+      	
+    });
+    $product = $('.product-' + {{ product.id }});
+  {% if product.variants.size > 1 or product.options.size > 1 %}
+      new Shopify.OptionSelectors("product-select-{{ product.id }}{{ product-form }}", { product: {{ product | json }}, onVariantSelected: selectCallback{% if template contains 'product' %}, enableHistoryState: false{% endif %} });
+  {% endif %}
+  });
+  // ]]>
+</script>
+
+{% endif %}
+
+<script>
+  $(document).ready(function(){
+    setTimeout(function(){
+    	get_count();
+    }, 500);
+ 
+  });
+   function show_sinup()
+   {
+          jQuery.magnificPopup.open({
+          items: {
+                  src: '#monogram-popup'
+          },
+          type: 'inline',
+          removalDelay: 500,
+          closeOnContentClick: false,
+          enableEscapeKey :false,
+          closeOnBgClick:false,
+          midClick: true
+
+        });
+   }
+  	document.addEventListener("touchstart", function(){}, true);
+	$('.monotype-monogram  input[type="radio"]').change(function()
+	{
+		$('.monotype-monogram ').find('li').removeClass('active');
+		$('.monotype-monogram input[type="radio"]:checked').parents('li').addClass('active');
+        var name = $('input[name="monogram"]').val();
+		get_count();
+		create_preview(name);
+				
+    }); 
+	$('.monotype-color  input[type="radio"]').change(function() 
+	{
+		$('.monotype-color ').find('li').removeClass('active');
+		$('.monotype-color input[type="radio"]:checked').parents('li').addClass('active');
+        var name = $('input[name="monogram"]').val();
+		create_preview(name);
+      var color	 = $('.monotype-color input[type="radio"]:checked').val();
+      
+      if(color=="#FFFFFF"){
+        $('.preview-outter').css("background-color", "#000");
+      }else{
+        $('.preview-outter').css("background-color", "#fff");
+      }
+    });
+			
+			
+	function show_review()
+	{
+				  var name = $('input[name="monogram"]').val();
+				   get_count();
+					create_preview(name);
+			 }
+	$('input[name="monogram"]').blur(function() {
+		var name=$(this).val();
+		$('.error').html('');
+      
+		create_preview(name);  
+    });
+			
+	function get_count()
+	{
+				var monogram = $('.monotype-monogram input[type="radio"]:checked').attr('id');
+				var count	= '';
+				var c_text  = 'Enter Text';
+				var monogramcount = $('.monotype-monogram input[type="radio"]:checked').attr('data-number');
+                if(monogramcount == ''){
+                  monogramcount = 3;
+                }
+      			
+      			var monogramtext = $('.monotype-monogram input[type="radio"]:checked').attr('data-text');
+      			var monogramerror = $('.monotype-monogram input[type="radio"]:checked').attr('data-error');
+      			var islower = $('.monotype-monogram input[type="radio"]:checked').attr('data-lower');
+     
+                if(monogramtext == ''){
+                  monogramtext = '3';
+                }
+				switch (monogram) 
+				{
+					case 'Conv_SalinasDemo-Regular':                    
+						count = monogramcount;
+						c_text= monogramtext;
+                    	var Conv_SalinasDemo_placeholder_data = $('#Conv_SalinasDemo-Regular').attr('data-error');
+                    	var Conv_SalinasDemo_placeholder_empty = 'Add Upto 5 Letters';
+                        if(Conv_SalinasDemo_placeholder_data!=''){
+                          $('#monogram').attr('placeholder',Conv_SalinasDemo_placeholder_data);
+                        }else{
+                          $('#monogram').attr('placeholder',Conv_SalinasDemo_placeholder_empty);
+                        }
+                    
+                        if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+                    
+                    
+                    case 'script_1':
+						count = monogramcount;
+						c_text= monogramtext; 
+                    	var script_1 = $('#script_1').attr('data-error');
+                    /*alert(Conv_SalinasDemo_Regular_1);*/
+                    	var Conv_SalinasDemo_Regular_holder = 'Add Upto 3 Letters';
+                    /*alert('2'+Conv_SalinasDemo_Regular_holder);*/
+                        if(Conv_SalinasDemo_Regular_1 != ''){
+                          $('#monogram').attr('placeholder',script_1);
+                        }else{
+                         	$('#monogram').attr('placeholder',Conv_SalinasDemo_Regular_holder); 
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+                    
+                    case 'script_name':
+						count = monogramcount;
+						c_text= monogramtext; 
+                    	var script_name = $('#script_name').attr('data-error');
+                    /*alert(Conv_SalinasDemo_Regular_1);*/
+                    	var Conv_SalinasDemo_Regular_holder = 'Add Upto 3 Letters';
+                    /*alert('2'+Conv_SalinasDemo_Regular_holder);*/
+                        if(Conv_SalinasDemo_Regular_1 != ''){
+                          $('#monogram').attr('placeholder',script_name);
+                        }else{
+                         	$('#monogram').attr('placeholder',Conv_SalinasDemo_Regular_holder); 
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+                    
+                    case 'block_name':
+						count = monogramcount;
+						c_text= monogramtext; 
+                    	var block_name = $('#block_name').attr('data-error');
+                    /*alert(Conv_SalinasDemo_Regular_1);*/
+                    	var Conv_SalinasDemo_Regular_holder = 'Add Upto 3 Letters';
+                    /*alert('2'+Conv_SalinasDemo_Regular_holder);*/
+                        if(Conv_SalinasDemo_Regular_1 != ''){
+                          $('#monogram').attr('placeholder',block_name);
+                        }else{
+                         	$('#monogram').attr('placeholder',Conv_SalinasDemo_Regular_holder); 
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+                    
+                    
+                    
+					case 'Conv_SalinasDemo-Regular_1':
+						count = monogramcount;
+						c_text= monogramtext; 
+                    	var Conv_SalinasDemo_Regular_1 = $('#Conv_SalinasDemo-Regular_1').attr('data-error');
+                    /*alert(Conv_SalinasDemo_Regular_1);*/
+                    	var Conv_SalinasDemo_Regular_holder = 'Add Upto 3 Letters';
+                    /*alert('2'+Conv_SalinasDemo_Regular_holder);*/
+                        if(Conv_SalinasDemo_Regular_1 != ''){
+                          $('#monogram').attr('placeholder',Conv_SalinasDemo_Regular_1);
+                        }else{
+                         	$('#monogram').attr('placeholder',Conv_SalinasDemo_Regular_holder); 
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+					case 'monogram_kk_scregular':
+						count = monogramcount;
+						c_text= monogramtext;
+                    	var monogram_kk_scregular = $('#monogram_kk_scregular').attr('data-error');
+                    	var monogram_kk_scregular_holder = 'Add Upto 3 Letters';
+                        if(monogram_kk_scregular!=''){
+                          $('#monogram').attr('placeholder',monogram_kk_scregular);
+                        }else{
+                         	$('#monogram').attr('placeholder',monogram_kk_scregular_holder); 
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+					case 'monogram_kk_scregular_1':
+						count = monogramcount;
+						c_text= monogramtext;
+                    	var monogram_kk_scregular_1 = $('#monogram_kk_scregular_1').attr('data-error');
+                    	var monogram_kk_place_holder = 'Add Upto 100 Letters';
+                        if(monogram_kk_scregular_1!=''){
+                          $('#monogram').attr('placeholder',monogram_kk_scregular_1);
+                        }else{
+                         	$('#monogram').attr('placeholder',monogram_kk_place_holder); 
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+					case 'monogram_diamond':     
+						count = monogramcount;
+						c_text= monogramtext;  
+                    	var monogram_diamond = $('#monogram_diamond').attr('data-error');
+                    	var monogram_diamond_empty = '';
+                    	if(monogram_diamond!=''){
+                      		$('#monogram').attr('placeholder',monogram_diamond);
+                        }else{
+                          $('#monogram').attr('placeholder',monogram_diamond_empty);
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+					case 'monogram_circle': 
+						count = monogramcount;  
+						c_text= monogramtext;
+                    	var monogram_circle = $('#monogram_circle').attr('data-error');
+                    	var monogram_circle_empty = 'Add Up to 3 Letters';
+                    	if(monogram_diamond!=''){
+                      		$('#monogram').attr('placeholder',monogram_circle);
+                        }else{
+                          $('#monogram').attr('placeholder',monogram_circle_empty);
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+					case 'block_san_serif':     
+						count = monogramcount; 
+						c_text= monogramtext; 
+                    	var block_san_serif = $('#block_san_serif').attr('data-error');
+                    	var block_san_serif_empty = 'block_san_serif';
+                    	if(block_san_serif!=''){
+                      		$('#monogram').attr('placeholder',block_san_serif);
+                        }else{
+                          $('#monogram').attr('placeholder',block_san_serif_empty);
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+					case 'block_san_serif_1': 
+						count = monogramcount; 
+						c_text= monogramtext; 
+                    	var block_san_serif_1 = $('#block_san_serif_1').attr('data-error');
+                    	var block_san_serif_1_empty = 'Add Upto 15 Letters';
+                    	if(block_san_serif){
+                      		$('#monogram').attr('placeholder',block_san_serif_1);
+                        }else{
+                          $('#monogram').attr('placeholder',block_san_serif_1_empty);
+                        }
+                    	if(islower == '1'){
+                          $('.form-outter #monogram').addClass('textlowercase');
+                        }else{
+                          $('.form-outter #monogram').removeClass('textlowercase');
+                        }
+						break;
+						
+					default:
+						count =3;
+				}
+				
+      			
+				c_text = c_text.replace(count,'<b>'+count+'</b>');
+				$('.monotype-preview .heading-outter p span').html(c_text);
+				
+				return count;
+			}
+			
+	$("input[name='monogram']").keypress(function(e) 
+	{
+				var count  = get_count();
+				
+				if($(this).val().length > count-1) 
+				{
+					if((e.which!=8))
+					{
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+				} 
+				else 
+				{
+					return true;
+				}
+			});
+			
+	function create_preview(name)
+	{
+              
+				if(name!='')  
+				{
+                  if($('.form-outter #monogram').hasClass('textlowercase')){
+					var name = name;
+                  }else{
+                    var name = name.toUpperCase();
+                  }
+					var mono_name = $('.monotype-monogram input[type="radio"]:checked').val();
+					var color	 = $('.monotype-color input[type="radio"]:checked').val();
+					var html 	 = '';
+					
+					var monogram = $('.monotype-monogram input[type="radio"]:checked').attr('id');
+					var count	= '';
+                  
+                  	var monogramcount = $('.monotype-monogram input[type="radio"]:checked').attr('data-number');
+                  
+                  	if(monogramcount == ''){
+                      monogramcount = 3;
+                    }
+					switch (monogram) 
+					{
+						case 'Conv_SalinasDemo-Regular':
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+                        html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; font-size: {{areawidth.monogram_areawidth}}px; position: absolute;">';
+                        {% endif %}
+                        {%endcomment%}
+							count = monogramcount;
+                           if(name.length <= count)
+							{
+							for (var x = 0; x < name.length; x++)
+							{
+                              var tot_char = name.length;
+                              var char_size = 250/tot_char;
+                              if(x < count){
+								var c = name.charAt(x);
+                                
+                                html+='<span style="font-family:Conv_SalinasDemo-Regular; font-size:'+char_size+'px; color:'+color+'; {%comment%}font-size:'+{{areaheight.monogram_areaheight}}+'px;{%endcomment%}">'+ c +'</span>';
+                              }
+                             }
+                              $('.preview-inner').html(html);
+							$('.error').html('');
+                             $('.heading-outter h6 p span').css('color','black');
+                            }
+							else
+							{
+                              	var error_data = $('#Conv_SalinasDemo-Regular').attr('data-error');                              
+                              if(error_data!=""){
+								//$('.error').html(error_data);    
+                                $('error').empty();
+                                $('.heading-outter h6 p span').css('color','red');                                
+                              }else{
+                                //$('.error').html('Please enter '+count+' letter');
+                                $('.heading-outter h6 p span').css('color','black');
+                              }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+							html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+						
+                        
+                        
+                        case 'script_1':
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+								html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';
+                            {% endif %}
+                        {%endcomment%}
+							count = monogramcount;
+							if(name.length <= count)
+							{
+                              
+								html+='<div class="clearfix class_dynamic script_1" style="width:170px; ">';
+                              var tot_char = name.length;
+                                var  second_char = 450/tot_char;
+                                var first_char_size = second_char/2;
+								for (var x = 0; x < name.length; x++)
+							{
+                              var tot_char = name.length;
+                              var char_size = 180/tot_char;
+                              if(x < count){
+								var c = name.charAt(x);
+                                
+                                html+='<span style="font-family:als_scriptregular; font-size:'+char_size+'px; color:'+color+'; {%comment%}font-size:'+{{areaheight.monogram_areaheight}}+'px;{%endcomment%}">'+ c +'</span>';
+                              }
+                             }
+								html+='</div>';
+                                html+='</div>';
+								$('.preview-inner').html(html);
+								var width = 6;
+								
+								$('.class_dynamic span').each(function() {
+                                
+									width = width + $(this).width();
+								});
+                               
+								$('.class_dynamic').css('width',(width));
+								$('.error').html('');
+                                $('.heading-outter h6 p span').css('color','black');
+							}
+							else
+							{
+                             	var error_data = $('#script_1').attr('data-error');
+                              	if(error_data!=""){
+                              		//$('.error').html(error_data);
+                                  	$('.heading-outter h6 p span').css('color','red');
+                                }else{
+                              		//$('.error').html('Please enter '+count+' letter');
+                                  	$('.heading-outter h6 p span').css('color','black');
+                                }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+                        		html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+                        
+                        
+                        
+                        case 'script_name':
+                        {%comment%}
+							{% if arealeft.monogram_arealeft %}
+								html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; font-size: {{areawidth.monogram_areawidth}}px; position: absolute;">';
+							{% endif %}
+                        {%endcomment%}
+							count = monogramcount;
+                           if(name.length <= count)
+							{
+							for (var x = 0; x < name.length; x++)
+							{
+                              var tot_char = name.length;
+                              var char_size = 300/tot_char;
+                              if(x < count){
+								var c = name.charAt(x);
+                                
+                                html+='<span style="font-family:als_scriptregular; font-size:'+char_size+'px; color:'+color+'; {%comment%}font-size:'+{{areaheight.monogram_areaheight}}+'px;{%endcomment%}">'+ c +'</span>';
+                              }
+                             }
+                              $('.preview-inner').html(html);
+							$('.error').html('');
+                              
+                              $('.heading-outter h6 p span').css('color','black');
+                            }
+							else
+							{	
+                              	var error_data = $('#als_scriptregular').attr('data-error');
+                              if(error_data!=""){
+								//$('.error').html(error_data);
+                                $('.heading-outter h6 p span').css('color','black');
+                              }else{
+                                //$('.error').html('Please enter '+count+' letter');
+                                $('.heading-outter h6 p span').css('color','red');
+                              }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+							html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+                        
+                        
+                        
+                        
+                        case 'block_name':
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+                        html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; font-size: {{areawidth.monogram_areawidth}}px; position: absolute;">';
+                        {% endif %}
+                        {%endcomment%}
+							count = monogramcount;
+                           if(name.length <= count)
+							{
+							for (var x = 0; x < name.length; x++)
+							{
+                              var tot_char = name.length;
+                              var char_size = 300/tot_char;
+                              if(x < count){
+								var c = name.charAt(x);
+                                
+                                html+='<span style="font-family:Conv_SalinasDemo-Regular; font-size:'+char_size+'px; color:'+color+'; {%comment%}font-size:'+{{areaheight.monogram_areaheight}}+'px;{%endcomment%}">'+ c +'</span>';
+                              }
+                             }
+                              $('.preview-inner').html(html);
+							$('.error').html('');
+                              
+                              $('.heading-outter h6 p span').css('color','black');
+                            }
+							else
+							{	
+                              	var error_data = $('#Conv_SalinasDemo-Regular').attr('data-error');
+                              if(error_data!=""){
+								//$('.error').html(error_data);
+                                $('.heading-outter h6 p span').css('color','black');
+                              }else{
+                                //$('.error').html('Please enter '+count+' letter');
+                                $('.heading-outter h6 p span').css('color','red');
+                              }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+							html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+                        
+                        
+                        
+                        
+                        
+						case 'Conv_SalinasDemo-Regular_1':
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+								html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';
+                            {% endif %}
+                        {%endcomment%}
+							count = monogramcount;
+							if(name.length <= count)
+							{
+								html+='<div class="clearfix class_dynamic" style="width:170px; margin:0 auto;">';
+                              var tot_char = name.length;
+                                var  second_char = 350/tot_char;
+                                var first_char_size = second_char/2;
+								for (var x = 0; x < name.length; x++)
+								{
+								 if(x < count){
+									var c = name.charAt(x);
+									if(x % 2 == 1)
+									{
+										html+='<span style="font-family:Conv_SalinasDemo-Regular; color:'+color+'; font-size:'+second_char+'px; float:left; line-height:25px;">'+ c +'</span>';
+									}else
+									{
+										html+='<span style="font-family:Conv_SalinasDemo-Regular; color:'+color+'; font-size:'+first_char_size+'px;float:left">'+ c +'</span>';
+									}
+                                 }
+									
+								}
+								html+='</div>';
+                                html+='</div>';
+								$('.preview-inner').html(html);
+								var width = 6;
+								
+								$('.class_dynamic span').each(function() {
+                                
+									width = width + $(this).width();
+								});
+                               
+								$('.class_dynamic').css('width',(width));
+								$('.error').html('');
+                              	$('.heading-outter h6 p span').css('color','black');
+							}
+							else
+							{
+                              var error_data = $('#Conv_SalinasDemo-Regular_1').attr('data-error');
+                              	if(error_data!=""){
+                                 	$('.heading-outter h6 p span').css('color','red'); 
+                                }else{
+									//$('.error').html('Please enter '+count+' letter');
+                                	$('.heading-outter h6 p span').css('color','black');
+                                }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+                        		html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+						
+						case 'monogram_kk_scregular':
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+							html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';
+                            {% endif %}
+                        {%endcomment%}
+							count = monogramcount;
+                        	if(name.length <= count)
+							{
+							for (var x = 0; x < name.length; x++)
+							{ 
+                              var tot_char = name.length;
+                              var char_size = 300/tot_char;
+                               if(x < count){
+								var c = name.charAt(x);
+								html+='<span style="font-family:monogram_kk_scregular; color:'+color+'; font-size:'+char_size+'px;">'+ c +'</span>';
+							
+                               }
+                            }
+                              $('.preview-inner').html(html);
+                              $('.error').html('');
+                              $('.heading-outter h6 p span').css('color','black');
+                            }else
+							{
+                              	var error_data = $('#monogram_kk_scregular').attr('data-error');
+                              	if(error_data!=""){
+									//$('.error').html(error_data);
+                                   $('.heading-outter h6 p span').css('color','red');
+                                }else{
+                              		//$('.error').html('Please enter '+count+' letter');
+                                  $('.heading-outter h6 p span').css('color','black');
+                                }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+								html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+						
+						case 'monogram_kk_scregular_1':
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+                        		html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';
+                            {% endif %}    
+                        {%endcomment%}
+							count = monogramcount;
+							if(name.length <= count)
+							{
+								html+='<div class="clearfix class_dynamic" style="width:175px; margin:0 auto;">';
+                              	var tot_char = name.length;
+                                var  second_char = 350/tot_char;
+                                var first_char_size = second_char/2;
+								for (var x = 0; x < name.length; x++)
+								{
+                                   if(x < count){
+									var c = name.charAt(x);
+									if(x % 2 == 1)
+									{
+										html+='<span style="font-family:monogram_kk_scregular; color:'+color+'; font-size:'+second_char+'px;float:left; line-height:25px;">'+ c +'</span>';
+									}else
+									{
+										html+='<span style="font-family:monogram_kk_scregular; color:'+color+'; font-size:'+first_char_size+'px;float:left;">'+ c +'</span>';
+									}
+                                   }
+								}
+								
+								html+='</div>'
+								$('.preview-inner').html(html);
+								
+								var width = 6;
+                              	
+								$('.class_dynamic span').each(function() {
+									width = width + $(this).width();
+								});
+								
+								$('.class_dynamic').css('width',(width));
+								$('.error').html('');
+                                $('.heading-outter h6 p span').css('color','black');
+							}else
+							{
+                              	var error_data = $('#monogram_kk_scregular_1').attr('data-error');
+                              	if(error_data!=""){
+                                 	$('.heading-outter h6 p span').css('color','red'); 
+                                }else{
+									//$('.error').html('Please enter '+count+' letter');
+                                	$('.heading-outter h6 p span').css('color','black');
+                                }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+								html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+						
+						case 'monogram_diamond':
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+								html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';                                
+                            {% endif %}
+                        {%endcomment%}
+							count = monogramcount;
+							if(name.length <= count)
+							{
+
+								html+='<span class="dimond-border" style="font-family:lhf_monogram_diamond_borderRg;  font-size:200px; display:block; color:'+color+'">*</span>';
+								for (var x = 0; x < name.length; x++)
+								{
+                                   if(x < count){
+									var c = name.charAt(x);
+									
+                                  	html+='<p style="font-family:lhf_monogram_diamond_'+(x+1)+'regular; line-height:100px; font-size:200px; color:'+color+'">'+ c +'</p>';
+								
+                                   }
+                                }
+								$('.preview-inner').html(html);
+								$('.error').html('');
+                              	$('.heading-outter h6 p span').css('color','black');
+							
+							}else
+                            {	
+                              	var error_data = $('#monogram_diamond').attr('data-error');
+                              	if(error_data!=""){
+                              		//$('.error').html(error_data);
+                                  	$('.heading-outter h6 p span').css('color','red');
+                                }else{
+                              		//$('.error').html('Please enter '+count+' letter');
+                                  	$('.heading-outter h6 p span').css('color','black');
+                                }
+								$('.preview-inner').html('');
+							}
+                        {%comment%}
+                        	{% if arealeft.monogram_arealeft %}
+                        		html+='</div>';
+                        	{% endif %}
+                        {%endcomment%}
+						break;
+							
+							
+							
+					case 'monogram_circle':
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+							html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';
+                        {% endif %}
+                        {%endcomment%}
+						count = monogramcount;
+						if(name.length <= count)
+						{
+							html+='<span class="circle-border" style="font-family:lhf_monogram_circle_bordersRg;  font-size:200px; display:block; color:'+color+'"> * </span>';
+						
+							 for (var x = 0; x < name.length; x++)
+							{
+                               if(x < count){
+								var c = name.charAt(x); 
+								
+								html+='<p style="font-family:lhf_monogram_circle_'+(x+1)+'regular; line-height:100px; font-size:200px; color:'+color+'">'+ c +'</p>';
+                               }
+                             }
+							$('.preview-inner').html(html);
+							$('.error').html('');
+                            $('.heading-outter h6 p span').css('color','black');
+						}
+						else
+						{
+                          var error_data = $('#monogram_circle').attr('data-error');
+                          if(error_data!=""){
+                            //$('.error').html(error_data);
+                            $('.heading-outter h6 p span').css('color','red');
+                          }else{
+                            //$('.error').html('Please enter '+count+' letter');
+                            $('.heading-outter h6 p span').css('color','black');
+                          }
+                          $('.preview-inner').html('');
+						}
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+							html+='</div>';
+                        {% endif %}
+                        {%endcomment%}
+					break;    
+							
+				    case 'block_san_serif':
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+						html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';
+                        {% endif %}
+                        {%endcomment%}
+						count = monogramcount;
+                        if(name.length <= count)
+						{
+						for (var x = 0; x < name.length; x++)
+						{  
+                          var tot_char = name.length;
+                              var char_size = 300/tot_char;
+                           if(x < count){
+    						var c = name.charAt(x);
+							html+='<span style="font-family:roboto_condensedbold; color:'+color+'; font-size:'+char_size+'px;">'+ c +'</span>';
+						
+                           }
+                        }
+                          $('.preview-inner').html(html);
+						$('.error').html('');
+						}
+						else
+						{
+                          	var error_data = $('#block_san_serif').attr('data-error');
+                          	if(error_data!=""){
+                          		$('.error').html(error_data);
+                            }else{
+                            	$('.error').html('Please enter '+count+' letter');
+                            }
+							$('.preview-inner').html('');
+						}
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+						html+='</div>';
+                        {% endif %}
+                        {%endcomment%}
+					break;
+						
+					case 'block_san_serif_1':
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+						html+='<div style="left:{{ arealeft.monogram_arealeft }}px; top: {{areatop.monogram_areatop}}px; position: absolute;">';
+                        {% endif %}
+                        {%endcomment%}
+						count = monogramcount;
+					    if(name.length <= count)
+						{
+							html+='<div class="clearfix class_dynamic" style="width:170px; margin:0 auto;">';
+                            var tot_char = name.length;
+                            var  second_char = 450/tot_char;
+                            var first_char_size = second_char/2;
+							for (var x = 0; x < name.length; x++)
+							{
+							 if(x < count){
+								var c = name.charAt(x);
+								if(x % 2 == 1)
+								{
+									html+='<span style="font-family:roboto_condensedbold; color:'+color+'; font-size:'+second_char+'px; float:left; line-height:25px;">'+ c +'</span>';
+								}else
+								{
+									html+='<span style="font-family:roboto_condensedbold; color:'+color+'; font-size:'+first_char_size+'px;float:left">'+ c +'</span>';
+								}
+                             }
+							}
+							html+='</div>'
+							$('.preview-inner').html(html);
+							var width = 6;
+							
+							$('.class_dynamic span').each(function() {                              
+								width = width + $(this).width();
+							});
+							$('.class_dynamic').css('width',(width));
+							$('.error').html('');
+					}
+					else
+					{
+                      	var error_data = $('#block_san_serif_1').attr('data-error');
+						if(error_data!=""){
+                      		$('.error').html(error_data);
+                        }else{
+                      		$('.error').html('Please enter '+count+' letter');
+                        }
+						$('.preview-inner').html('');
+					}
+                        {%comment%}
+                        {% if arealeft.monogram_arealeft %}
+                        html+='</div>';
+                        {% endif %}
+                        {%endcomment%}
+					break;
+				 }
+			}
+      			else
+                {
+                  /*'.error').html('Please enter some word');*/
+                }
+			
+		}
+			
+	function show_confirm()
+	{
+      $('html, body').removeClass("monoteer");
+			get_count();
+				 
+			var name=$(' input[name=monogram]').val();
+			
+			create_preview(name);
+            var mono_text = $('#monogram').val();      
+      		$('.mono-type').empty();
+      		$('.mono-type').append('<input type="hidden" id="monogram_text"  value="'+mono_text+'" >');
+      
+			if(name!='')
+			{
+              var error = 0;
+              if($('.form-outter #monogram').hasClass('textlowercase')){
+                var name = name;
+              }else{
+                var name = name.toUpperCase();
+              }
+              //var name = name.toUpperCase(); // main-preview-inner
+              var mono_name = $('.monotype-monogram input[type="radio"]:checked').val();
+              var color	 = $('.monotype-color input[type="radio"]:checked').val();
+              var monogram = $('.monotype-monogram input[type="radio"]:checked').attr('id');
+              var html 	 = '';
+              $('#monogram').val(name);
+              $('#color').val($('.monotype-color input[type="radio"]:checked').attr('id'));
+              $('#style').val(mono_name);
+              var monogramcount = $('.monotype-monogram input[type="radio"]:checked').attr('data-number');
+                  
+              if(monogramcount == ''){
+                  monogramcount = 3;
+               }
+              count = monogramcount;
+              //alert(monogram);
+              switch (monogram) 
+			  {
+					
+              
+              case 'Conv_SalinasDemo-Regular':
+						
+				if(name.length > 0)
+                {
+                	html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>'; 
+                  	html += '<div {%comment%}style="margin-left: 91px; margin-top: 180px;{%endcomment%}">';
+					for (var x = 0; x < name.length; x++)
+							{
+                              if(x < count){
+								var c = name.charAt(x);
+								html+='<span style="font-family:Conv_SalinasDemo-Regular; color:'+color+'; font-size:30px;">'+ c +'</span>';
+                              }
+                             }
+                			html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+							$('.main-preview-inner').html(html);
+							$('.error').html('');
+                			error = 0;
+                 }else{
+                        {%comment%}
+                        var error_data = $('#Conv_SalinasDemo-Regular').attr('data-error');
+                        $('.error').html(error_data);
+                        {%endcomment%}
+                        {%comment%}$('.error').html('Please enter 3 letter');{%endcomment%}
+                        $('.main-preview-inner').html('');
+                        error = 1;
+                 }
+                 break;
+                  
+                  case 'block_name':
+						
+				if(name.length > 0)
+                {
+                	html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>'; 
+                  	html += '<div {%comment%}style="margin-left: 91px; margin-top: 180px;{%endcomment%}">';
+					for (var x = 0; x < name.length; x++)
+							{
+                              if(x < count){
+								var c = name.charAt(x);
+								html+='<span style="font-family:Conv_SalinasDemo-Regular; color:'+color+'; font-size:30px;">'+ c +'</span>';
+                              }
+                             }
+                			html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+							$('.main-preview-inner').html(html);
+							$('.error').html('');
+                			error = 0;
+                 }else{
+                        {%comment%}
+                        var error_data = $('#Conv_SalinasDemo-Regular').attr('data-error');
+                        $('.error').html(error_data);
+                        {%endcomment%}
+                        {%comment%}$('.error').html('Please enter 3 letter');{%endcomment%}
+                        $('.main-preview-inner').html('');
+                        error = 1;
+                 }
+                 break;
+               
+               case 'script_name':
+						
+						
+							if(name.length > 0)
+							{	
+                              var tot_char = name.length;
+                                var  second_char = 120/tot_char;
+                                var first_char_size = 75/tot_char;
+                               html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';  
+								html +='<div class="clearfix class_dynamic1" style="width:100%;text-align:center; margin:0 auto;">';
+                            	
+                                html +='<div style="display:inline-block">';
+								for (var x = 0; x < name.length; x++)
+								{
+								  if(x < count){
+									var c = name.charAt(x);
+									if(x % 2 == 1)
+									{
+										html+='<span style="font-family:als_scriptregular; color:'+color+'; font-size:'+second_char+'px; float:left;">'+ c +'</span>';
+									}else
+									{
+										html+='<span style="font-family:als_scriptregular; color:'+color+'; font-size:'+first_char_size+'px;float:left;">'+ c +'</span>';
+									}
+                                  }
+								}
+                                html+='</div>';
+								html+='</div>';
+                              	html+='</div>';
+                              	html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+								$('.main-preview-inner').html(html);
+								var width = 6;
+								
+								$('.class_dynamic1 span').each(function() {
+                                
+									width = width + $(this).width();
+								});
+                               
+								//$('.class_dynamic1').css('width',(width));
+								$('.error').html('');
+                              	error = 0;
+							}
+							else
+							{
+                              	var error_data = $('#Conv_SalinasDemo-Regular').attr('data-error');
+                              	$('.error').html(error_data);
+                                {%comment%}$('.error').html('Please enter 3 letter');{%endcomment%}
+								$('.main-preview-inner').html('');
+                              	error = 1;
+							}
+						break;   
+               
+               case 'script_1':
+						
+						
+							if(name.length > 0)
+							{	
+                              var tot_char = name.length;
+                                var  second_char = 120/tot_char;
+                                var first_char_size = 75/tot_char;
+                               html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';  
+								html +='<div class="clearfix class_dynamic1" style="width:100%;text-align:center; margin:0 auto;">';
+                            	
+                                html +='<div style="display:inline-block">';
+								for (var x = 0; x < name.length; x++)
+								{
+								  if(x < count){
+									var c = name.charAt(x);
+									if(x % 2 == 1)
+									{
+										html+='<span style="font-family:als_scriptregular; color:'+color+'; font-size:'+second_char+'px; float:left;">'+ c +'</span>';
+									}else
+									{
+										html+='<span style="font-family:als_scriptregular; color:'+color+'; font-size:'+first_char_size+'px;float:left;">'+ c +'</span>';
+									}
+                                  }
+								}
+                                html+='</div>';
+								html+='</div>';
+                              	html+='</div>';
+                              	html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+								$('.main-preview-inner').html(html);
+								var width = 6;
+								
+								$('.class_dynamic1 span').each(function() {
+                                
+									width = width + $(this).width();
+								});
+                               
+								$('.modified-monogram').css('width', '122%');
+								$('.error').html('');
+                              	error = 0;
+							}
+							else
+							{
+                              	var error_data = $('#Conv_SalinasDemo-Regular').attr('data-error');
+                              	$('.error').html(error_data);
+                                {%comment%}$('.error').html('Please enter 3 letter');{%endcomment%}
+								$('.main-preview-inner').html('');
+                              	error = 1;
+							}
+						break;
+						
+						case 'Conv_SalinasDemo-Regular_1':
+						
+						
+							if(name.length > 0)
+							{	
+                              var tot_char = name.length;
+                                var  second_char = 120/tot_char;
+                                var first_char_size = 75/tot_char;
+                               html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';  
+								html +='<div class="clearfix class_dynamic1" style="width:100%;text-align:center; margin:0 auto;">';
+                            	
+                                html +='<div style="display:inline-block">';
+								for (var x = 0; x < name.length; x++)
+								{
+								  if(x < count){
+									var c = name.charAt(x);
+									if(x % 2 == 1)
+									{
+										html+='<span style="font-family:Conv_SalinasDemo-Regular; color:'+color+'; font-size:'+second_char+'px; float:left;">'+ c +'</span>';
+									}else
+									{
+										html+='<span style="font-family:Conv_SalinasDemo-Regular; color:'+color+'; font-size:'+first_char_size+'px;float:left;">'+ c +'</span>';
+									}
+                                  }
+								}
+                                html+='</div>';
+								html+='</div>';
+                              	html+='</div>';
+                              	html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+								$('.main-preview-inner').html(html);
+								var width = 6;
+								
+								$('.class_dynamic1 span').each(function() {
+                                
+									width = width + $(this).width();
+								});
+                               
+								//$('.class_dynamic1').css('width',(width));
+								$('.error').html('');
+                              	error = 0;
+							}
+							else
+							{
+                              	var error_data = $('#Conv_SalinasDemo-Regular').attr('data-error');
+                              	$('.error').html(error_data);
+                                {%comment%}$('.error').html('Please enter 3 letter');{%endcomment%}
+								$('.main-preview-inner').html('');
+                              	error = 1;
+							}
+						break;
+						
+						case 'monogram_kk_scregular':
+						
+							
+                			 html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';
+							for (var x = 0; x < name.length; x++)
+							{
+                              if(x < count){
+								var c = name.charAt(x);
+								html+='<span style="font-family:monogram_kk_scregular; color:'+color+'; font-size:30px;">'+ c +'</span>';
+                              }
+                            }
+                			html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+							$('.main-preview-inner').html(html);
+							$('.error').html('');
+                			error = 0;
+						break;
+						
+						case 'monogram_kk_scregular_1':
+						
+							if(name.length > 0)
+							{
+                              var tot_char = name.length;
+                                var  second_char = 120/tot_char;
+                                var first_char_size = 75/tot_char;
+                               	 html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';
+                              
+								html +='<div class="clearfix class_dynamic1" style="width:100%;text-align:center; margin:0 auto;">';
+                            	
+                                html +='<div style="display:inline-block">';
+								for (var x = 0; x < name.length; x++)
+								{
+                                  if(x < count){
+									var c = name.charAt(x);
+									if(x % 2 == 1)
+									{
+										html+='<span style="font-family:monogram_kk_scregular; color:'+color+'; font-size:'+second_char+'px;float:left;">'+ c +'</span>';
+									}else
+									{
+										html+='<span style="font-family:monogram_kk_scregular; color:'+color+'; font-size:'+first_char_size+'px;float:left;">'+ c +'</span>';
+									}
+                                  }
+								}
+								
+								html+='</div>';
+                              	html+='</div>';
+                                html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+								$('.main-preview-inner').html(html);
+								
+								var width = 6;
+								
+								$('.class_dynamic1 span').each(function() {
+									width = width + $(this).width();
+								});
+								
+								//$('.class_dynamic1').css('width',(width));
+								$('.error').html('');
+                              	error = 0;
+							}else
+							{
+                              	var error_data = $('#monogram_kk_scregular_1').attr('data-error');
+                              	$('.error').html(error_data);
+                              	{%comment%}$('.error').html('Please enter 3 letter');{%endcomment%}
+								$('.main-preview-inner').html('');
+                              error = 1;
+							}
+						
+						break;
+						
+						case 'monogram_diamond':
+						
+							
+							if(name.length > 0)
+							{
+                                 html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>'; 
+
+								html +='<span class="dimond-border" style="font-family:lhf_monogram_diamond_borderRg; position:absolute; font-size:65px; display:block; color:'+color+'">*</span>';
+								for (var x = 0; x < name.length; x++)
+								{
+                                  if(x < count){
+									var c = name.charAt(x);
+									
+									html+='<p style="font-family:lhf_monogram_diamond_'+(x+1)+'regular;display: inline-block!important; font-size:65px;line-height: 32px; color:'+color+'">'+ c +'</p>';
+                                  }
+                                }
+                              	html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+								$('.main-preview-inner').html(html);
+								$('.error').html('');
+                              	error = 0;
+							
+							}else
+							{
+								$('.error').html('Please enter 3 letter');
+								$('.main-preview-inner').html('');
+                              	error = 1;
+							}
+						break;
+							
+							
+							
+					case 'monogram_circle':
+						
+					
+						if(name.length > 0)
+						{
+                           	 html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';
+							html +='<span class="circle-border" style="font-family:lhf_monogram_circle_bordersRg; position:absolute;  font-size:75px; display:block; color:'+color+'"> * </span>';
+						
+							 for (var x = 0; x < name.length; x++)
+							{
+                              if(x < count){
+								var c = name.charAt(x); 
+								
+                                html+='<p style="font-family:lhf_monogram_circle_'+(x+1)+'regular;display: inline-block!important; font-size:75px;line-height: 35px; color:'+color+'">'+ c +'</p>';
+							  }
+                            }
+                          	html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+							$('.main-preview-inner').html(html);
+							$('.error').html('');
+                          	error = 0;
+						}
+						else
+						{
+							$('.error').html('Please enter 3 letter');
+							$('.main-preview-inner').html('');
+                          	error = 1;
+						}
+						
+						
+					break;    
+							
+				    case 'block_san_serif':
+					
+					
+                 		 html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';
+						for (var x = 0; x < name.length; x++)
+						{
+                          if(x < count){
+    						var c = name.charAt(x);
+							html+='<span style="font-family:roboto_condensedbold; color:'+color+'; font-size:30px;">'+ c +'</span>';
+						
+                          }
+                        }
+						html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+						$('.main-preview-inner').html(html);
+						$('.error').html('');
+                		error = 0;
+					break;
+						
+					case 'block_san_serif_1':
+					
+					
+					    if(name.length > 0)
+						{
+                          	var tot_char = name.length;
+                                var  second_char = 120/tot_char;
+                                var first_char_size = 75/tot_char;
+                          
+                            html += '<a href="javascript:void(0)" class="del" onclick="delete_sinup()" ></a>';
+                          	html +='<div class="clearfix class_dynamic1" style="width:100%;text-align:center; margin:0 auto;">'
+                            html +='<div style="display:inline-block">';
+                            for (var x = 0; x < name.length; x++)
+							{
+							  if(x < count){
+								var c = name.charAt(x);
+								if(x % 2 == 1)
+								{
+									html+='<span style="font-family:roboto_condensedbold; color:'+color+'; font-size:'+second_char+'px; float:left;">'+ c +'</span>';
+								}else
+								{
+									html+='<span style="font-family:roboto_condensedbold; color:'+color+'; font-size:'+first_char_size+'px;float:left">'+ c +'</span>';
+								}
+                              }
+							}
+							html+='</div>';
+                            html+='</div>';
+                            html+='<a href="javascript:void(0)" onclick="show_edit()" class="edit">Edit</a>';
+							$('.main-preview-inner').html(html);
+                          
+							var width = 2;
+							
+							$('.class_dynamic1 span').each(function() {
+								width = width + $(this).width();
+							});
+                          //alert(width);
+							//$('.class_dynamic1').css('width',(width));
+							$('.error').html('');
+                          	error = 0;
+					}
+					else
+					{
+						$('.error').html('Please enter 3 letter');
+						$('.main-preview-inner').html('');
+                      	error = 1;
+					}
+					break;
+             }
+              
+              if(error==1)
+              {
+                $('.mono-show').css('display','block');
+                return false;
+              }
+              else
+              {
+              
+                $('.check-outter').css('display','none'); 
+                
+                $('.preview-wrp').css('display','block');
+               	$.magnificPopup.close();
+              }
+			}
+      		else
+            {
+              /*'.error').html('Please enter some word');*/
+            }
+			
+   }
+  function delete_sinup()
+  {
+    $('#monogram').val('');
+    $('#color').val('');
+    $('#style').val('');
+    $('.main-preview-inner').html(''); 
+    $('.preview-inner').html('');
+    $('input[name=monogram]').val('');    
+    $('input[id=Conv_SalinasDemo-Regular]').click();
+    $('input[id=red]').click();
+    $('.check-outter').css('display','block');
+    $('.preview-wrp').css('display','none');
+   	$('.mono-type').empty();
+    $('.mono-type').append('<input type="hidden" id="monogram_text" >');
+  }
+  
+  function show_edit()
+  {
+     jQuery.magnificPopup.open({
+          items: {
+                  src: '#monogram-popup'
+          },
+          type: 'inline',
+          removalDelay: 500,
+          closeOnContentClick: false,
+          enableEscapeKey :false,
+          closeOnBgClick:false,
+          midClick: true
+
+        });
+  }
+			
+  	function fnTest(check){
+      var firsttext = $('#Conv_SalinasDemo-Regular').attr('data-error');
+            $('#monogram').attr('placeholder',firsttext);
+            if($(check).is(':checked')){
+              //alert($(check).html());
+              
+              $('html, body').addClass("monoteer");
+              $('.shappify_option_value').find('.shappify_check_option input').prop("checked", true);
+              
+            }
+            else{
+              $('html, body').removeClass("monoteer");
+        		$('.shappify_option_value').find('.shappify_check_option input').prop("checked", false);        
+            }
+      $(document).on('click','.del',function(){
+    		$('.shappify_option_value').find('.shappify_check_option input').removeAttr('checked');
+        $('#price-chk').removeAttr('checked');
+});
+    }
+  
+
+  $(".add_to_cart1").click(function(){
+    
+    var prod = $("#hidden_product").val();
+ 
+    if($('#price-chk').is(':checked')){  
+      var $qty = $('#quantity').val();
+      var $monogram= $('#monogram_text').val();
+      var $style = $('#style').val();
+      var $color = $('#color').val();
+      var $product_name = $('.product_name').html();
+      
+      
+      $.post('/cart/add.js',{quantity:$qty, id:prod,
+                             properties:{'Monogram':$monogram,
+                                         'Style':$style,
+                                         'Color':$color,
+                                         'For':$product_name,
+                                        } });
+    }else{    
+	    $('.mono_hidden_pro').empty();
+    }
+    setTimeout(function(){
+      $('.quantity-wrp .add_to_cart').click();
+    }, 500);
+    
+/*  alert('hi'+monogram_price);*/
+    jQuery.getJSON('/cart.js', function(product) {
+ /*alert(JSON.stringify(product));*/
+} );
+ 
+
+        jQuery.getJSON('/cart.js', function(product) {
+ /*alert(JSON.stringify(product));*/
+} );    
+    
+
+});
+        </script>
+
+ 
